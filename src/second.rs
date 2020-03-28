@@ -1,17 +1,28 @@
 use crate::SortOrder;
 use crate::SortOrder::*;
 
-// 配列をソートする
+// バイトニック配列をソートする
 // array : 配列
 // order : ソート順
-pub fn sort<T: Ord>(array: &mut[T], order: &SortOrder) {
+pub fn sort<T: Ord>(array: &mut[T], order: &SortOrder) -> Result<(), String> {
+    match array.len() {
+        0 => Ok(()),
+        n => if n.is_power_of_two() {
+                do_sort(array, order);
+                Ok(())
+            } else{
+                Err(format!("The length of array is not a power of two. (array.len(): {})", array.len()))
+            },
+    }
+}
+
+fn do_sort<T: Ord>(array: &mut[T], order: &SortOrder) {
     if array.len() <= 1 {
         return;
     }
-
     let mid = array.len() / 2;
-    sort(&mut array[..mid], &Ascending); // 前半を昇順
-    sort(&mut array[mid..], &Descending); // 後半を降順でソート
+    do_sort(&mut array[..mid], &Ascending); // 前半を昇順
+    do_sort(&mut array[mid..], &Descending); // 後半を降順でソート
     sub_sort(array, order);
 }
 
@@ -61,7 +72,7 @@ mod tests {
     fn sort_u32_ascending() {
         let mut array: Vec<u32> = vec![10, 30 , 11, 20, 4, 330, 21, 110];
         
-        sort(&mut array, &Ascending);
+        assert!(sort(&mut array, &Ascending).is_ok());
 
         assert_eq!(array, vec![4, 10, 11, 20, 21, 30, 110, 330]);
     }
@@ -71,7 +82,7 @@ mod tests {
     fn sort_u32_descending() {
         let mut array: Vec<u32> = vec![10, 30 , 11, 20, 4, 330, 21, 110];
         
-        sort(&mut array, &Descending);
+        assert!(sort(&mut array, &Descending).is_ok());
 
         assert_eq!(array, vec![330, 110, 30, 21, 20, 11, 10, 4]);
     }
@@ -81,7 +92,7 @@ mod tests {
     fn sort_ascending_zero() {
         let mut array: Vec<u32> = vec![];
         
-        sort(&mut array, &Ascending);
+        assert!(sort(&mut array, &Ascending).is_ok());
 
         assert_eq!(array, vec![]);
     }
@@ -91,7 +102,7 @@ mod tests {
     fn sort_descending_zero() {
         let mut array: Vec<u32> = vec![];
         
-        sort(&mut array, &Descending);
+        assert!(sort(&mut array, &Descending).is_ok());
 
         assert_eq!(array, vec![]);
     }
@@ -101,7 +112,7 @@ mod tests {
     fn sort_ascending_one() {
         let mut array: Vec<u32> = vec![10];
         
-        sort(&mut array, &Ascending);
+        assert!(sort(&mut array, &Ascending).is_ok());
 
         assert_eq!(array, vec![10]);
     }
@@ -111,7 +122,7 @@ mod tests {
     fn sort_descending_one() {
         let mut array: Vec<u32> = vec![45];
         
-        sort(&mut array, &Descending);
+        assert!(sort(&mut array, &Descending).is_ok());
 
         assert_eq!(array, vec![45]);
     }
@@ -121,7 +132,7 @@ mod tests {
     fn sort_str_ascending() {
         let mut array = vec!["Rust", "is", "fast", "and", "memory-efficient", "with", "no", "GC"];
         
-        sort(&mut array, &Ascending);
+        assert!(sort(&mut array, &Ascending).is_ok());
 
         assert_eq!(array, vec!["GC", "Rust", "and", "fast", "is", "memory-efficient", "no", "with"]);
     }
@@ -131,8 +142,16 @@ mod tests {
     fn sort_str_descending() {
         let mut array = vec!["Rust", "is", "fast", "and", "memory-efficient", "with", "no", "GC"];
         
-        sort(&mut array, &Descending);
+        assert!(sort(&mut array, &Descending).is_ok());
 
         assert_eq!(array, vec!["with", "no", "memory-efficient", "is", "fast", "and", "Rust", "GC"]);
+    }
+
+    // 要素が2のべき乗個ではない場合
+    #[test]
+    fn sort_elemtns_not_power_of_two() {
+        let mut array: Vec<u32> = vec![45, 21, 11];
+        
+        assert!(sort(&mut array, &Descending).is_err());
     }
 }
