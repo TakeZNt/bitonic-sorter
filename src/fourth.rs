@@ -260,7 +260,7 @@ mod tests {
 
     #[test]
     fn sort_u32_large_ascending() {
-        let mut x = new_u32_vec(2 << 16);
+        let mut x = new_u32_vec(1 << 16);
 
         assert_eq!(sort(&mut x, &Ascending), Ok(()));
         assert!(is_sorted_ascending(&x));
@@ -268,7 +268,7 @@ mod tests {
 
     #[test]
     fn sort_u32_large_descending() {
-        let mut x = new_u32_vec(2 << 16);
+        let mut x = new_u32_vec(1 << 16);
 
         assert_eq!(sort(&mut x, &Descending), Ok(()));
         assert!(is_sorted_descending(&x));
