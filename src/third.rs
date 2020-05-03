@@ -86,6 +86,7 @@ fn compare_and_swap<T, F>(array: &mut[T], comparator: &F, forward: bool)
 mod tests {
     use super::{sort, sort_by};
     use crate::SortOrder::*;
+    use crate::utils::{new_u32_vec, is_sorted_ascending, is_sorted_descending};
 
     #[derive(Debug,PartialEq)] //これがないとassert_eq!ができない
     struct Student {
@@ -225,4 +226,22 @@ mod tests {
         
         assert!(sort(&mut array, &Descending).is_err());
     }
+
+    #[test]
+    fn sort_u32_large_ascending() {
+        let mut x = new_u32_vec(2 << 16);
+
+        assert_eq!(sort(&mut x, &Ascending), Ok(()));
+        assert!(is_sorted_ascending(&x));
+    }
+
+    #[test]
+    fn sort_u32_large_descending() {
+        let mut x = new_u32_vec(2 << 16);
+
+        assert_eq!(sort(&mut x, &Descending), Ok(()));
+        assert!(is_sorted_descending(&x));
+    }
+
+
 }
