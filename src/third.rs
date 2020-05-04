@@ -56,6 +56,7 @@ where
     let mid = array.len() / 2;
     do_sort(&mut array[..mid], comparator, true); // 前半を昇順
     do_sort(&mut array[mid..], comparator, false); // 後半を降順でソート
+    
     sub_sort(array, comparator, forward);
 }
 
@@ -64,19 +65,19 @@ where
 /// - bitonic_array : バイトニック列
 /// - comparator : 比較のためのクロージャ
 /// - forward : 昇順の場合true, 降順の場合false
-fn sub_sort<T, F>(array: &mut [T], comparator: &F, forward: bool)
+fn sub_sort<T, F>(bitonic_array: &mut [T], comparator: &F, forward: bool)
 where
     F: Fn(&T, &T) -> Ordering,
 {
-    if array.len() <= 1 {
+    if bitonic_array.len() <= 1 {
         return;
     }
     // 比較＆入れ替えによって並び順をascに近づける（ソートは不完全。半分にするとそれぞれがバイトニック列になる）
-    compare_and_swap(array, comparator, forward);
+    compare_and_swap(bitonic_array, comparator, forward);
 
-    let mid = array.len() / 2;
-    sub_sort(&mut array[..mid], comparator, forward);
-    sub_sort(&mut array[mid..], comparator, forward);
+    let mid = bitonic_array.len() / 2;
+    sub_sort(&mut bitonic_array[..mid], comparator, forward);
+    sub_sort(&mut bitonic_array[mid..], comparator, forward);
 }
 
 /// 各要素を要素数n / 2だけ右の要素と比較し、昇順か降順かに応じて並べ替える
